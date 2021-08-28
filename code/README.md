@@ -18,6 +18,6 @@ Various Charged Tree Affordances
 	function use() // release charge
 	function trade() // swapability
 ```
-I might have with some impact in other domains like streaming data using brain machine interfaces to pick up on like resonance groupings of individuals in ecological formations, like a forest, filled with different totem abstractions.
+It might have impact in other domains like streaming data using brain machine interfaces to pick up on like resonance groupings of individuals in ecological formations, like a forest, filled with different totem abstractions.
 
 More on this is touched on in the Eth(OS)step Project.
