@@ -1,12 +1,12 @@
-Notice of Code insipiration: 
+## Notice of Code insipiration: 
 
 I should note some of the origins from where this code came from, was from an ethglobal hackathon project called NFTree. The idea was conceived prior, but, even augments some of my new findings with covalent bonds and charge resemblances if I were to think about what i'd want as a tree. 
 
-// Thinking of trees as types of peripheries to the planet,
-// we can accomodate affrodances for interacting with the land
-// inheriting the attributes of carbon sequestration
-// and futures on timber prices for builing homes
-// this is really exciting;
+* Thinking of trees as types of peripheries to the planet,
+* we can accomodate affrodances for interacting with the land
+* inheriting the attributes of carbon sequestration
+* and futures on timber prices for builing homes
+* this is really exciting;
 
 	function plant() // with erc20
 	function plantSeed() // with nft
