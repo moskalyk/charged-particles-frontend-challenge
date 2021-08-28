@@ -1,15 +1,20 @@
-# Basic Sample Hardhat Project
+Notice of Code insipiration: 
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+I should note some of the origins from where this code came from, was from an ethglobal hackathon project called NFTree. The idea was conceived prior, but, even augments some of my new findings with covalent bonds and charge resemblances if I were to think about what i'd want as a tree. 
 
-Try running some of the following tasks:
+// Thinking of trees as types of peripheries to the planet,
+// we can accomodate affrodances for interacting with the land
+// inheriting the attributes of carbon sequestration
+// and futures on timber prices for builing homes
+// this is really exciting;
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+	function plant() // with erc20
+	function plantSeed() // with nft
+	function graft() // grow with nft
+	function grow() // grow with erc20
+	function use() // release charge
+	function trade() // swapability
+
+I might have with other domains like streaming data using brain machine interfaces to pick up on like resonance groupings of individuals in ecological formations, like a forest, filled with different totem abstractions.
+
+More on this is touched on in the Eth(OS)step Project.

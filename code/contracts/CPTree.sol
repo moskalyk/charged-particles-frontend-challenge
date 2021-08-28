@@ -45,7 +45,7 @@ contract CPTree is ERC721 {
 	}
 
 	// create an NFT tree with tokens
-	function plant(string calldata walletManagerId, address assetToken, uint256 assetAmount, bytes32 tokenMediaURI)
+	function plant(string calldata walletManagerId, address assetToken, uint256 assetAmount, string memory tokenMediaURI)
 		external
 	{
 		address owner = _msgSender();
@@ -61,15 +61,14 @@ contract CPTree is ERC721 {
 
 		Plant(tokenId);
 
-		// check to see if ERC is 20, first planting requ
 		IERC20(assetToken).approve(address(_CP), assetAmount);
-			_CP.energizeParticle(
-				address(this),
-				tokenId,
-				walletManagerId,
-				assetToken,
-				assetAmount,
-				address(0x0)
+		_CP.energizeParticle(
+			address(this),
+			tokenId,
+			walletManagerId,
+			assetToken,
+			assetAmount,
+			address(0x0)
 		);
 
 	    // chain link futures contract
@@ -81,7 +80,7 @@ contract CPTree is ERC721 {
 	}
 
 	// plant from another nft seed
-	function plantSeed(string calldata walletManagerId, address assetToken, uint256 nftTokenId, bytes32 tokenMediaURI) external {
+	function plantSeed(string calldata walletManagerId, address assetToken, uint256 nftTokenId, string memory tokenMediaURI) external {
 		address owner = _msgSender();
 
 	    _idCounter.increment();
