@@ -1,20 +1,35 @@
+
+// design them modules
 import defaultLogo from './images/charged-particles-logo-default-colors.svg';
-import Link from '@material-ui/core/Link';
+// import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import {Grid, TextField, Button} from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './root.theme';
 
+// Wallet modules
+import { Web3ReactProvider } from '@web3-react/core'
+import { Web3Provider } from '@ethersproject/providers'
+import { ethers } from "ethers";
+import { useWeb3React } from '@web3-react/core'
+import { InjectedConnector } from '@web3-react/injected-connector'
+import { parseUnits, formatUnits, formatEther } from "@ethersproject/units";
+import { abi as IErc20 } from './abis/erc20.json'
+import { abi as CPTree } from './abis/cptree.json'
+
+// react modules
 import {useState, useRef, useEffect} from 'react'
 import { request, gql } from 'graphql-request';
+import { Link, useHistory } from 'react-router-dom'
 
-// import './gsap.min.js'
+// gsap
 import { gsap } from "gsap";
 
-    let pts, nPts = gsap.utils.random(9,11,1)
+let pts, nPts = gsap.utils.random(9,11,1)
 
-    const nPoly = 25,
-      radius = 180
+const nPoly = 25, radius = 180
+
+let ethersProvider;
 
 function setPts(){
   pts = [];  
@@ -26,6 +41,216 @@ function setPts(){
   }
   gsap.to('.p', {attr:{points:pts}, duration:1.5, ease:'none'});
 }
+
+// function MyButton(props) {
+//   const [show, setShow] = useState(false);
+
+//   const handleClose = () => setShow(false);
+//   const handleShow = () => setShow(true);
+
+//   function renderSwitch(param) {
+//     switch(param) {
+//       case 'Swap':
+//         return (
+//           <>
+//           {/*balance*/}
+//           <Swapper setShow={setShow}/>
+//           </>);
+//       case 'Approve':
+//         return 'Approval';
+//       default:
+//         return 'x error x';
+//     }
+//   }
+
+//   return (
+//     <>
+//       <button type="button" disabled={props.disabled} className="but" onClick={handleShow}>{props.name}</button>
+
+//       <Modal show={show} onHide={handleClose}>
+//         <Modal.Header closeButton>
+//           <Modal.Title>{props.name} to deposit</Modal.Title>
+//         </Modal.Header>
+//           {renderSwitch(props.name)}
+//         <Modal.Footer>
+//           <Button variant="secondary" onClick={handleClose}>
+//             Close
+//           </Button>
+//         </Modal.Footer>
+//       </Modal>
+//     </>
+//   );
+// }
+
+// function MyFlatButton(props) {
+//   return (
+//     <>
+//       <button type="button" disabled={props.disabled} className="but" onClick={async () => {
+//         await props.click(props.bigbalance)
+//       }
+//       }>{props.name}</button>
+
+//     </>
+//   );
+// }
+
+// function MyDelegateButton(props) {
+//   const history = useHistory();
+
+//   return (
+//     <>
+//       <button type="button" disabled={props.disabled} className="but" onClick={async () => {
+        
+//         console.log(ethersProvider)
+//         let creditExecutor = new ethers.Contract(creditExecutorAddress, ICreditExecutor, ethersProvider.getSigner())
+//         // 
+//         const amount = 10;
+//         // let amountToDeposit = amount
+//         let amountToDeposit = parseUnits(amount.toString(), 18)
+//       // perform test to see allowance
+//         // let res = await creditExecutor.repayBorrowerWithNFT( amountToDeposit, daiContractAddress, 0 )
+
+//         const res = await creditExecutor.depositCollateral(daiContractAddress, amountToDeposit, true)
+//         console.log(res)
+
+//         history.push("/delegate")
+
+//       }
+//       }>{props.name}</button>
+
+//     </>
+//   );
+// }
+
+export const injectedConnector = new InjectedConnector({
+  supportedChainIds: [
+    1, // Mainet
+    3, // Ropsten
+    4, // Rinkeby
+    5, // Goerli
+    42, // Kovan
+  ],
+})
+
+const cpTreeAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+const daiContractAddress = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD'
+
+const getTokenBalance = async (_token, _account, _contract) => {
+  let newBalance
+  if(_token === 'ETH') {
+    newBalance = await ethersProvider.getBalance(_account)
+
+  } else {
+    try{
+      console.log('_account')
+      console.log(_account)
+      newBalance = await _contract.balanceOf(_account)
+    }catch(e){
+      console.log(e)
+    }
+  }
+  return newBalance
+}
+
+function getLibrary(provider) {
+  console.log(provider)
+  // const provider = new ethers.providers.AlchemyProvider
+  // const provider = 
+  ethersProvider = new ethers.providers.Web3Provider(window.ethereum)
+  console.log(ethersProvider.getSigner())
+
+  const library = new Web3Provider(provider)
+  library.pollingInterval = 12000
+  return library
+}
+
+const convertValue = (_amountInUnits, _decimals, _toEthMultiplier) => {
+let decimals = _decimals ? _decimals : 18
+let toEthMultiplier = _toEthMultiplier ? _toEthMultiplier : 1
+return (parseFloat(formatUnits(_amountInUnits, decimals)) * toEthMultiplier)
+}
+
+const formattedValue = (_amountInUnits, _decimals, _toEthMultiplier) => {
+return convertValue(_amountInUnits, _decimals, _toEthMultiplier).toLocaleString()
+}
+
+let cpTree;
+
+export const Wallet = (props) => {
+  const { chainId, account, activate, active } = useWeb3React()
+
+    useEffect(async () => {
+      console.log(`use effect -- account: ${account}`)
+      console.log(ethersProvider)
+      if(ethersProvider){
+
+      const balance = await getTokenBalance(
+          'DAI', 
+          account, 
+          new ethers.Contract(daiContractAddress, IErc20, ethersProvider.getSigner())
+          )
+        if(balance != undefined){
+          console.log(balance)
+          console.log(balance.toString())
+          props.setBigbalance(balance)
+          props.setBalance(formattedValue(balance, 18))
+          props.setAccount(account)
+        }
+
+          console.log('---------')
+        cpTree = new ethers.Contract(cpTreeAddress, CPTree, ethersProvider.getSigner())
+          console.log('---------')
+          console.log(cpTree)
+        cpTree.deployed((c) => {
+          console.log('---------')
+          console.log(c)
+        }) 
+      }else {
+        console.log('provider NOT_SET')
+      }
+
+    }, [account,active,ethersProvider, cpTree])
+
+  const onActivateClick = async () => {
+      activate(injectedConnector)
+  }
+
+  return (
+    <div className="simple-form">
+      {active ? (
+        <>
+          <div >account: {account ? account.substring(0,5)+'...' : ''}</div>
+          <div >dai balance: {props.balance}</div>
+          <div> ✅ </div>
+        </>
+      ) : (
+        <Button variant="contained" color="primary" name="connect" style={{marginLeft: '-9px'}} onClick={() => onActivateClick()}>⎈</Button>
+      )}
+    </div>
+  )
+}
+
+
+const Account = (props) => {
+  const [account, setAccount ] = useState('')
+  const [balance, setBalance ] = useState(0)
+  const [bigbalance, setBigbalance ] = useState(0)
+  const [approved, setApproved ] = useState(false)
+  const history = useHistory();
+
+  console.log(props.id)
+  console.log(account)
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      {props.base ? '' : <p>{'⇪'}</p> }
+      <Wallet balance={balance} setBigbalance={setBigbalance} setBalance={setBalance} setAccount={setAccount}/>
+      {/*wallet*/}
+      {/*approve*/}
+      {/*deposit*/}
+    </Web3ReactProvider>
+  )
+}
+
 
 const App = () => {
 
@@ -96,6 +321,12 @@ const App = () => {
 
   }, []);
 
+  const plantCPTree = async () => {
+    console.log('planting tree')
+    const tx = await cpTree.plant('aave', daiContractAddress, 2, 'QmQW3dWkX9vPRDfPprhu8pqtVKAkroh9aXgfs5SqtpxpsM')
+    console.log(tx)
+  }
+
 
   return (
     <ThemeProvider theme={{ ...theme }}>
@@ -106,12 +337,13 @@ const App = () => {
                 wood wide web 
               </Typography>
             </Grid>
+            <Account /*id={id} setModal={setModal}*/ />
           </Grid>
           <Grid container direction="column">
             <Grid item>
               <TextField id="standard-basic" value={particleValue} label="Standard" onChange={e => setParticleValue(e.target.value)}/>
               <TextField id="standard-basic" label="Standard"/>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={plantCPTree}>
                 Primary
               </Button>
             </Grid>

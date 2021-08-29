@@ -1,7 +1,8 @@
 pragma solidity 0.7.6;
 
 import "./interfaces/IChargedParticles.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./interfaces/IChargedSettings.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -24,7 +25,8 @@ contract CPTree is ERC721 {
 	event Trade(uint256 tokenId);
 
 	Counters.Counter private _idCounter;
-	IChargedParticles private _CP;
+	IChargedParticles public _CP;
+	IChargedSettings public _CS;
 	mapping (uint256 => Tree) public _trees;
 	mapping (address => EnumerableSet.UintSet) private _ownerMap;
 
@@ -38,11 +40,18 @@ contract CPTree is ERC721 {
 	}
 
 	constructor(address chargedParticlesAddress)
+	// constructor(address chargedParticlesAddress, address chargedSettingsAddress)
 		public
 	ERC721("CPTree", "CPTREE")
 	{
 		_CP = IChargedParticles(chargedParticlesAddress);
+		// _CS = IChargedSettings(chargedSettingsAddress);
+
 	}
+
+	function greeting() public view returns (string memory) {
+        return "Welcome to the renewing arbor;";
+    }
 
 	// create an NFT tree with tokens
 	function plant(string calldata walletManagerId, address assetToken, uint256 assetAmount, string memory tokenMediaURI)
@@ -61,15 +70,16 @@ contract CPTree is ERC721 {
 
 		Plant(tokenId);
 
+		// _CS.setAllowedAssetToken(address(this), assetToken, true);
 		IERC20(assetToken).approve(address(_CP), assetAmount);
-		_CP.energizeParticle(
-			address(this),
-			tokenId,
-			walletManagerId,
-			assetToken,
-			assetAmount,
-			address(0x0)
-		);
+		// _CP.energizeParticle(
+		// 	address(this),
+		// 	tokenId,
+		// 	walletManagerId,
+		// 	assetToken,
+		// 	assetAmount,
+		// 	address(0x0)
+		// );
 
 	    // chain link futures contract
 
@@ -102,13 +112,13 @@ contract CPTree is ERC721 {
 
 		// check to see if ERC is 721, first planting requirement
 		IERC721(assetToken).approve(address(_CP), nftTokenId);
-			_CP.covalentBond(
-				address(this),
-				tokenId,
-				walletManagerId,
-				assetToken,
-				nftTokenId
-		);
+		// _CP.covalentBond(
+		// 	address(this),
+		// 	tokenId,
+		// 	walletManagerId,
+		// 	assetToken,
+		// 	nftTokenId
+		// );
 
 	    // TODO: chain link futures contract to ftx endpoint
 

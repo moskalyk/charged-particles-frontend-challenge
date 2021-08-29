@@ -36,6 +36,11 @@ const KOVAN_PRIVATE_KEY = process.env.KOVAN_PRIVATE_KEY || '';
 module.exports = {
   solidity: "0.7.6",
   networks: {
+    hardhat: {
+      forking: {
+        url: "https://eth-kovan.alchemyapi.io/v2/qy_G_Y-BXfAv9yEslLEW3Prts9mpG-PG"
+      }
+    },
     kovan: {
       url: `${ALCHEMY_URL}`,
       saveDeployments: true,
