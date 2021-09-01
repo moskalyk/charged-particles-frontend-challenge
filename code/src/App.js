@@ -27,9 +27,21 @@ import { gsap } from "gsap";
 
 let pts, nPts = gsap.utils.random(9,11,1)
 
-const nPoly = 25, radius = 180
+let nPoly = 5
+let radius = 180
 
 let ethersProvider;
+
+function getRings(){
+  // perform smart contract call to get the charge of the particles for the tree nft
+  return nPoly
+}
+
+function getBonds(){
+  // perfrom a smart contract call on the # of covalent bonds to get the number of point shape
+  return pts
+}
+
 
 function setPts(){
   pts = [];  
@@ -42,86 +54,6 @@ function setPts(){
   gsap.to('.p', {attr:{points:pts}, duration:1.5, ease:'none'});
 }
 
-// function MyButton(props) {
-//   const [show, setShow] = useState(false);
-
-//   const handleClose = () => setShow(false);
-//   const handleShow = () => setShow(true);
-
-//   function renderSwitch(param) {
-//     switch(param) {
-//       case 'Swap':
-//         return (
-//           <>
-//           {/*balance*/}
-//           <Swapper setShow={setShow}/>
-//           </>);
-//       case 'Approve':
-//         return 'Approval';
-//       default:
-//         return 'x error x';
-//     }
-//   }
-
-//   return (
-//     <>
-//       <button type="button" disabled={props.disabled} className="but" onClick={handleShow}>{props.name}</button>
-
-//       <Modal show={show} onHide={handleClose}>
-//         <Modal.Header closeButton>
-//           <Modal.Title>{props.name} to deposit</Modal.Title>
-//         </Modal.Header>
-//           {renderSwitch(props.name)}
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={handleClose}>
-//             Close
-//           </Button>
-//         </Modal.Footer>
-//       </Modal>
-//     </>
-//   );
-// }
-
-// function MyFlatButton(props) {
-//   return (
-//     <>
-//       <button type="button" disabled={props.disabled} className="but" onClick={async () => {
-//         await props.click(props.bigbalance)
-//       }
-//       }>{props.name}</button>
-
-//     </>
-//   );
-// }
-
-// function MyDelegateButton(props) {
-//   const history = useHistory();
-
-//   return (
-//     <>
-//       <button type="button" disabled={props.disabled} className="but" onClick={async () => {
-        
-//         console.log(ethersProvider)
-//         let creditExecutor = new ethers.Contract(creditExecutorAddress, ICreditExecutor, ethersProvider.getSigner())
-//         // 
-//         const amount = 10;
-//         // let amountToDeposit = amount
-//         let amountToDeposit = parseUnits(amount.toString(), 18)
-//       // perform test to see allowance
-//         // let res = await creditExecutor.repayBorrowerWithNFT( amountToDeposit, daiContractAddress, 0 )
-
-//         const res = await creditExecutor.depositCollateral(daiContractAddress, amountToDeposit, true)
-//         console.log(res)
-
-//         history.push("/delegate")
-
-//       }
-//       }>{props.name}</button>
-
-//     </>
-//   );
-// }
-
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
     1, // Mainet
@@ -132,7 +64,7 @@ export const injectedConnector = new InjectedConnector({
   ],
 })
 
-const cpTreeAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+const cpTreeAddress = '0x5806Fd1Cb9DEc9A3623f2132C2DFA9b2a72Dcf51'
 const daiContractAddress = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD'
 
 const getTokenBalance = async (_token, _account, _contract) => {
@@ -251,13 +183,14 @@ const Account = (props) => {
   )
 }
 
-
-const App = () => {
-
+const Tree = () => {
   const rings = useRef();
-  const [particleValue, setParticleValue] = useState()
 
   useEffect(() => {
+
+    setTimeout((nPoly) => {
+      nPoly=nPoly+5
+    }, 2000, nPoly)
 
   for (let i=1; i<=nPoly; i++){ //make + animate empty polygon elements
     let p = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
@@ -279,14 +212,24 @@ const App = () => {
     gsap
       .timeline({ repeat:-1 })
       .to(p, {
-        duration:4+i/nPoly*3,
-        scale:1,
+        duration:4+i/getRings()*3,
+        scale:0.5,
         ease:'expo'
       })
       .seek(9)
   }
 
     gsap.to(window, {duration:1.5, repeat:-1, onStart:setPts, onRepeat:setPts});
+
+  })
+
+     return(<svg ref={rings} id="stage" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" stroke="none"></svg>)
+
+}
+
+const App = () => {
+
+  const [particleValue, setParticleValue] = useState()
 
 
   const query = gql`
@@ -319,11 +262,9 @@ const App = () => {
     console.log(protonToken);
   }, 2000)
 
-  }, []);
-
   const plantCPTree = async () => {
     console.log('planting tree')
-    const tx = await cpTree.plant('aave', daiContractAddress, 2, 'QmQW3dWkX9vPRDfPprhu8pqtVKAkroh9aXgfs5SqtpxpsM')
+    const tx = await cpTree.plant('aave', daiContractAddress, particleValue, 'QmQW3dWkX9vPRDfPprhu8pqtVKAkroh9aXgfs5SqtpxpsM')
     console.log(tx)
   }
 
@@ -346,8 +287,8 @@ const App = () => {
               <Button variant="contained" color="primary" onClick={plantCPTree}>
                 Primary
               </Button>
+              <Tree />
             </Grid>
-            <svg ref={rings} id="stage" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" stroke="none"></svg>
           </Grid>
 
         </main>

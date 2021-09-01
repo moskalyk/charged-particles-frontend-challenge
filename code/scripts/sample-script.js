@@ -14,25 +14,26 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
+  // const Greeter = await hre.ethers.getContractFactory("Greeter");
   const CPTree = await hre.ethers.getContractFactory("CPTree");
   const NFT = await hre.ethers.getContractFactory("NFT");
 
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
-  await greeter.deployed();
+  // const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // await greeter.deployed();
   const cptree = await CPTree.deploy('0xF03EAB2b60eFB6E24C1b254A2D6fC91Eb639D6d3');
   
-  const nft = await NFT.deploy("NFT", "NFT");
-  await nft.deployed();
+  // const nft = await NFT.deploy("NFT", "NFT");
+  // await nft.deployed();
   await cptree.deployed();
 
-  const tx = await nft.mint(1, "QmQW3dWkX9vPRDfPprhu8pqtVKAkroh9aXgfs5SqtpxpsM")
-  const res = await nft.balanceOf('0xE01A0ba2ca92AD5f63b989596d3f966b4a395448')
-  console.log(res.toString())
+  // console.log("Greeter deployed to:", greeter.address);
+  console.log("CPTree deployed to:", cptree.address);
+  // console.log("NFT deployed to:", nft.address);
 
-  console.log("Greeter deployed to:", greeter.address);
-  console.log("CPTRee deployed to:", cptree.address);
-  console.log("NFT deployed to:", nft.address);
+  // const tx = await nft.mint(1, "QmQW3dWkX9vPRDfPprhu8pqtVKAkroh9aXgfs5SqtpxpsM")
+  // console.log(tx)
+  // const res = await nft.balanceOf('0xE01A0ba2ca92AD5f63b989596d3f966b4a395448')
+  // console.log(res.toString())
 }
 
 // We recommend this pattern to be able to use async/await everywhere

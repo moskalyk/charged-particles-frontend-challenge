@@ -72,14 +72,14 @@ contract CPTree is ERC721 {
 
 		// _CS.setAllowedAssetToken(address(this), assetToken, true);
 		IERC20(assetToken).approve(address(_CP), assetAmount);
-		// _CP.energizeParticle(
-		// 	address(this),
-		// 	tokenId,
-		// 	walletManagerId,
-		// 	assetToken,
-		// 	assetAmount,
-		// 	address(0x0)
-		// );
+		_CP.energizeParticle(
+			address(this),
+			tokenId,
+			walletManagerId,
+			assetToken,
+			assetAmount,
+			address(0x0)
+		);
 
 	    // chain link futures contract
 
@@ -87,6 +87,23 @@ contract CPTree is ERC721 {
 
 	    // add token URI to tree tokenMediaURI
 	    _safeMint(owner, tokenId);
+	}
+
+	function getCharge(address contractAddress, uint256 tokenId, string memory walletManagerId, address assetToken) external returns (uint256) {
+		return _CP.currentParticleCharge(
+  			contractAddress,
+  			tokenId,
+  			walletManagerId, 
+  			assetToken
+		);
+	}
+
+	function getRings(address contractAddress, uint256 tokenId, string memory basketManagerId) external returns (uint256) {
+		return _CP.currentParticleCovalentBonds(
+  				contractAddress,
+				tokenId,
+			 	basketManagerId
+			);
 	}
 
 	// plant from another nft seed
@@ -158,11 +175,35 @@ contract CPTree is ERC721 {
 	function use() external {
 		uint256 tokenId = _idCounter.current();
 		Use(tokenId);
+
+		address payable owner = _msgSender();
+	    require(
+	      _isApprovedOrOwner(owner, tokenId),
+	      "NFTree: caller is not owner nor approved"
+	    );
+
+	    Tree memory tree = _trees[tokenId];
+
+	    require(
+	      !tree.isUsed,
+	      "CPTree: tree is already used"
+	    );
+
+    	_trees[tokenId].isUsed = true; 
+
+    // _CP.dischargeParticle(
+    //   owner,
+    //   address(this),
+    //   tokenId,
+    //   tree.walletManagerId,
+    //   tree.assetToken
+    // );
+    	_burn(tokenId);
 	}
 
-	// swap 2 charged nfts
-	function trade() external {
-		uint256 tokenId = _idCounter.current();
-		Use(tokenId);
-	}
+	// // swap 2 charged nfts
+	// function trade() external {
+	// 	uint256 tokenId = _idCounter.current();
+	// 	Use(tokenId);
+	// }
 }
